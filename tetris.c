@@ -13,47 +13,88 @@ typedef struct Peça {
 
 Peça *fila = NULL;
 
-//Nome das peças
+//Nome das peças e gerar aleatoriamente
 
 const char *nomes_pecas[] = {
-    "I", "J", "L", "O", "S", "T", "Z"
+    "I", "O", "T", "S", "Z", "J", "L"
 };
+
 
 
 //Menu do jogo para inserir as peças e remover
 
-void menu() {
+void adicionar_peca(int tipo) {
+    Peça *nova_peca = (Peça *)malloc(sizeof(Peça));
+    nova_peca->tipo = tipo;
+    nova_peca->proxima = NULL;
+
+    if (fila == NULL) {
+        fila = nova_peca;
+    } else {
+        Peça *temp = fila;
+        while (temp->proxima != NULL) {
+            temp = temp->proxima;
+        }
+        temp->proxima = nova_peca;
+    }
+    printf("Peça %s adicionada à fila.\n", nomes_pecas[tipo]);
+}
+
+void remover_peca(void) {
+    if (fila == NULL) {
+        printf("A fila está vazia. Nenhuma peça para remover.\n");
+        return;
+    }
+    Peça *removida = fila;
+    fila = fila->proxima;
+    printf("Peça %s removida da fila.\n", nomes_pecas[removida->tipo]);
+    free(removida);
+}
+
+void usar_peca_reservada(void) {
+    if (fila == NULL) {
+        printf("A fila está vazia. Nenhuma peça reservada para usar.\n");
+        return;
+    }
+    Peça *usada = fila;
+    fila = fila->proxima;
+    printf("Peça reservada %s usada no jogo.\n", nomes_pecas[usada->tipo]);
+    free(usada);
+}
+
+void menu(void) {
     int escolha;
     do {
         printf("Menu do Tetris:\n");
         printf("1. Adicionar peça\n");
         printf("2. Remover peça\n");
-        printf("3. Sair\n");
+        printf("3. Usar peça reservada\n");
+        printf("4. Sair\n");
         printf("Escolha uma opção: ");
         scanf("%d", &escolha);
 
-        if (escolha == 1) {
-            int tipo;
-            printf("Digite o tipo da peça (0-6): ");
-            scanf("%d", &tipo);
-            Peça *nova_peca = (Peça *)malloc(sizeof(Peça));
-            nova_peca->tipo = tipo;
-            nova_peca->proxima = fila;
-            fila = nova_peca;
-            printf("Peça %s adicionada à fila.\n", nomes_pecas[tipo]);
-        } else if (escolha == 2) {
-            if (fila != NULL) {
-                Peça *removida = fila;
-                fila = fila->proxima;
-                printf("Peça %s removida da fila.\n", nomes_pecas[removida->tipo]);
-                free(removida);
-            } else {
-                printf("A fila está vazia.\n");
+        switch (escolha) {
+            case 1: {
+                printf("Digite o tipo da peça (0-6): ");
+                int tipo;
+                scanf("%d", &tipo);
+                adicionar_peca(tipo);
+                break;
             }
+            case 2:
+                remover_peca();
+                break;
+            case 3:
+                usar_peca_reservada();
+                break;
+            case 4:
+                printf("Saindo do jogo. Obrigado por jogar!\n");
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
         }
-    } while (escolha != 3);
+    } while (escolha != 4);
 }
-
 
 int main() {
     menu();
